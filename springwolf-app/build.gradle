@@ -2,25 +2,47 @@ plugins {
 	id 'org.springframework.boot' version '2.5.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'com.bmuschko.docker-spring-boot-application' version '6.1.4'
+
 }
 
 group = 'io.github.springwolf'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+version = '0.0.1'
+sourceCompatibility = "11"
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
+	mavenLocal() {
+		content {
+			includeGroup "io.github.springwolf"
+		}
+	}
+
 	mavenCentral()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	runtimeOnly 'io.github.springwolf:springwolf-ui:0.1.1'
-
+	runtimeOnly 'io.github.springwolf:springwolf-ui:0.2.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
 	useJUnitPlatform()
+}
+
+docker {
+	springBootApplication {
+		maintainer = 'shamir.stav@gmail.com'
+		baseImage = 'amazoncorretto:11-alpine'
+		ports = [8080]
+		images = ["springwolf/springwolf-app:${project.version}"]
+	}
+
+	registryCredentials {
+		username = project.findProperty('dockerhubUsername') ?: ''
+		password = project.findProperty('dockerhubPassword') ?: ''
+	}
 }
