@@ -30,11 +30,13 @@ public class DefaultAsyncDocFileService implements AsyncDocFileService {
 
     @PostConstruct
     private void initialize() {
+        log.info("Reading files from {}", dirName);
         getFilesNames().forEach(this::addDoc);
     }
 
     @SuppressWarnings("unchecked")
     private void addDoc(String fileName) {
+        log.debug("Adding {}", fileName);
         var fullPath = Path.of(dirName + "/" + fileName);
 
         try {
@@ -49,7 +51,7 @@ public class DefaultAsyncDocFileService implements AsyncDocFileService {
 
             docs.put(title, asMap);
         } catch (IOException e) {
-            log.error("Failed to load {}", fileName);
+            log.error("Failed to add {}", fileName);
         }
     }
 
