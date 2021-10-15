@@ -1,8 +1,9 @@
 package io.github.springwolf.springwolfapp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,68 +12,59 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class DefaultAsyncDocFileService implements AsyncDocFileService {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultAsyncDocFileService.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private Map<String, Map<String, Object>> docs;
+    private static final TypeReference<Map<String, Object>> docTypeRef = new TypeReference<>() {};
+    private final Map<String, Map<String, Object>> docs = new HashMap<>();
 
     @Value("${files-dir}")
     private String dirName;
 
     @PostConstruct
     private void initialize() {
-        var typeRef = new TypeReference<Map<String, Object>>() {
-        };
+        getFilesNames().forEach(this::addDoc);
+    }
 
+    @SuppressWarnings("unchecked")
+    private void addDoc(String fileName) {
+        var fullPath = Path.of(dirName + "/" + fileName);
+
+        try {
+            String contents = Files.readString(fullPath);
+            var asMap = mapper.readValue(contents, docTypeRef);
+
+            String title = Optional.ofNullable(asMap.get("info"))
+                    .filter(info -> info instanceof Map)
+                    .map(info -> (Map<String, Object>) info)
+                    .map(info -> (String) info.get("title"))
+                    .orElse(fileName);
+
+            docs.put(title, asMap);
+        } catch (IOException e) {
+            log.error("Failed to load {}", fileName);
+        }
+    }
+
+    private List<String> getFilesNames() {
         File[] files = new File(dirName).listFiles();
 
         if (files == null) {
-            return;
+            return Collections.emptyList();
         }
 
-
-
-        docs = Stream.of(files)
+        return Stream.of(files)
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .filter(s -> s.endsWith(".json"))
-                .map(file -> dirName + "/" + file)
-                .map(Path::of)
-                .map(this::readToString)
-                .filter(Objects::nonNull)
-                .map(s -> mapToMap(typeRef, s))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(this::getTitle, s -> s));
-    }
-
-    private String getTitle(Map<String, Object> map) {
-        Map info = (Map) map.get("info");
-        return (String) info.get("title");
-    }
-
-    private Map<String, Object> mapToMap(TypeReference<Map<String, Object>> typeRef, String s) {
-        try {
-            return mapper.readValue(s, typeRef);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private String readToString(Path file) {
-        try {
-            return Files.readString(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+                .collect(toList());
     }
 
     @Override
