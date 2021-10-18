@@ -49,9 +49,11 @@ public class SpringwolfKafkaProducer {
 
     public void send(String topic, Map<String, Object> payload) {
         if (producer == null) {
+            log.warn("Can't publish to kafka - producer failed to initialize");
             throw new SpringwolfProducerException("Could not connect to Kafka");
         }
 
+        log.info("Publishing to kafka topic {}: {}", topic, payload);
         var record = new ProducerRecord<String, String>(topic, payload.toString());
         producer.send(record);
     }
