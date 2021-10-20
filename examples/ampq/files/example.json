@@ -1,0 +1,78 @@
+{
+    "asyncapi": "2.0.0",
+    "info": {
+      "title": "Springwolf Demo",
+      "description": "This is a demo project for springwolf that shows how the UI looks like and functions.",
+      "version": "1.0.0"
+    },
+    "servers": {
+      "ampq": {
+        "url": "ampq",
+        "protocol": "ampq"
+      }
+    },
+    "channels": {
+      "another-topic": {
+        "subscribe": {
+          "bindings": {
+            "ampq": {}
+          },
+          "message": {
+            "name": "io.github.stavshamir.springwolf.example.dtos.AnotherPayloadDto",
+            "title": "AnotherPayloadDto",
+            "payload": {
+              "$ref": "#/components/schemas/AnotherPayloadDto"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "ExamplePayloadDto": {
+          "type": "object",
+          "properties": {
+            "someString": {
+              "type": "string"
+            },
+            "someLong": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "someEnum": {
+              "type": "string",
+              "enum": [
+                "FOO1",
+                "FOO2",
+                "FOO3"
+              ]
+            }
+          },
+          "example": {
+            "someString": "string",
+            "someLong": 0,
+            "someEnum": "FOO1"
+          }
+        },
+        "AnotherPayloadDto": {
+          "type": "object",
+          "properties": {
+            "foo": {
+              "type": "string"
+            },
+            "example": {
+              "$ref": "#/components/schemas/ExamplePayloadDto"
+            }
+          },
+          "example": {
+            "foo": "string",
+            "example": {
+              "someString": "string",
+              "someLong": 0,
+              "someEnum": "FOO1"
+            }
+          }
+        }
+      }
+    }
+  }
