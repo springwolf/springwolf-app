@@ -23,7 +23,9 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
     implementation 'org.apache.kafka:kafka-clients:0.10.2.0'
+    implementation 'com.rabbitmq:amqp-client:5.13.1'
 
     runtimeOnly 'io.github.springwolf:springwolf-ui:0.2.0'
 

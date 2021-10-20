@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Service
-public class SpringwolfKafkaProducer {
+public class SpringwolfKafkaProducer implements SpringwolfProducer {
 
     private static final Logger log = LoggerFactory.getLogger(SpringwolfKafkaProducer.class);
     private Producer<String, String> producer;
@@ -26,7 +26,7 @@ public class SpringwolfKafkaProducer {
     private void initialize() {
         String bootstrapServer = asyncDocFileService.getServers().get("kafka");
         if (bootstrapServer != null && !bootstrapServer.isBlank()) {
-            log.info("Initializing kafka producer");
+            log.info("Initializing kafka producer for bootstrap servers " + bootstrapServer);
 
             try {
                 producer = buildProducer(bootstrapServer);
@@ -47,6 +47,7 @@ public class SpringwolfKafkaProducer {
         return new KafkaProducer<>(config);
     }
 
+    @Override
     public void send(String topic, Map<String, Object> payload) {
         if (producer == null) {
             log.warn("Can't publish to kafka - producer failed to initialize");

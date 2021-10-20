@@ -13,9 +13,17 @@ public class ProducersController {
     @Autowired
     private SpringwolfKafkaProducer kafkaProducer;
 
+    @Autowired
+    private SpringwolfAmpqProducer ampqProducer;
+
     @PostMapping("/kafka/publish")
-    public void publish(@RequestParam String topic, @RequestBody Map<String, Object> payload) {
+    public void publishKafka(@RequestParam String topic, @RequestBody Map<String, Object> payload) {
         kafkaProducer.send(topic, payload);
+    }
+
+    @PostMapping("/ampq/publish")
+    public void publishAmpq(@RequestParam String topic, @RequestBody Map<String, Object> payload) {
+        ampqProducer.send(topic, payload);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
