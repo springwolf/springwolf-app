@@ -1,17 +1,21 @@
 asyncapi: 2.0.0
 info:
-  title: Springwolf Demo YAML
-  description: This is a demo project for springwolf that shows how the UI looks like and functions.
+  title: springwolf-app-demo-consumer
+  description: An example AsyncApi doc of a Kafka consumer microservice.
   version: 1.0.0
 servers:
-  amqp:
-    url: amqp
-    protocol: amqp
+  kafka:
+    url: kafka:29092
+    protocol: kafka
 channels:
   example-queue:
-    subscribe:
+    publish:
       bindings:
-        amqp: { }
+        kafka:
+          groupId:
+            type: string
+            enum:
+              - example-group-id
       message:
         title: ExamplePayload
         payload:
