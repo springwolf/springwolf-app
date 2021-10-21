@@ -3,15 +3,15 @@ services:
   app:
     image: springwolf/springwolf-app:0.0.1
     links:
-      - ampq
+      - amqp
     volumes:
       - ./files:/app/docs
     ports:
       - "8080:8080"
     depends_on:
-      - ampq
+      - amqp
 
-  ampq:
+  amqp:
     image: rabbitmq:3.8-management-alpine
     ports:
       # AMQP protocol port
