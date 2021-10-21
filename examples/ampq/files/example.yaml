@@ -1,0 +1,31 @@
+asyncapi: 2.0.0
+info:
+  title: Springwolf Demo YAML
+  description: This is a demo project for springwolf that shows how the UI looks like and functions.
+  version: 1.0.0
+servers:
+  amqp:
+    url: amqp
+    protocol: amqp
+channels:
+  example-queue:
+    subscribe:
+      bindings:
+        amqp: { }
+      message:
+        title: ExamplePayload
+        payload:
+          "$ref": "#/components/schemas/ExamplePayload"
+components:
+  schemas:
+    ExamplePayload:
+      type: object
+      properties:
+        someString:
+          type: string
+        someLong:
+          type: integer
+          format: int64
+      example:
+        someString: string
+        someLong: 0

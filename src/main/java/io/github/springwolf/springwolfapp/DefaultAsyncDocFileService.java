@@ -2,6 +2,7 @@ package io.github.springwolf.springwolfapp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,9 @@ import static java.util.stream.Collectors.toMap;
 public class DefaultAsyncDocFileService implements AsyncDocFileService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultAsyncDocFileService.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
     private static final TypeReference<Map<String, Object>> docTypeRef = new TypeReference<>() {};
 
     private final Map<String, Map<String, Object>> docs = new HashMap<>();
@@ -43,14 +46,24 @@ public class DefaultAsyncDocFileService implements AsyncDocFileService {
         var fullPath = Path.of(dirName + "/" + fileName);
 
         try {
-            String contents = Files.readString(fullPath);
-            var asMap = mapper.readValue(contents, docTypeRef);
-
+            Map<String, Object> asMap = getAsMap(fullPath);
             servers.putAll(mapServers(asMap));
             docs.put(getTitle(fileName, asMap), asMap);
         } catch (IOException e) {
             log.error("Failed to add {}", fileName);
         }
+    }
+
+    private Map<String, Object> getAsMap(Path fullPath) throws IOException {
+        String contents = Files.readString(fullPath);
+
+        if (fullPath.toString().endsWith(".json")) {
+            return jsonMapper.readValue(contents, docTypeRef);
+        } else if (fullPath.toString().endsWith(".yaml")) {
+            return yamlMapper.readValue(contents, docTypeRef);
+        }
+
+        throw new RuntimeException("File extension must be json or yaml");
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +100,7 @@ public class DefaultAsyncDocFileService implements AsyncDocFileService {
         return Stream.of(files)
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
-                .filter(s -> s.endsWith(".json"))
+                .filter(s -> s.endsWith(".json") || s.endsWith("yaml"))
                 .collect(toList());
     }
 
