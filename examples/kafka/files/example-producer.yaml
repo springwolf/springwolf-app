@@ -10,7 +10,7 @@ servers:
     protocol: kafka
 
 channels:
-  example-queue:
+  example-topic:
     subscribe:
       bindings:
         kafka: {}
