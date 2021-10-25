@@ -42,7 +42,7 @@ docker {
         maintainer = 'shamir.stav@gmail.com'
         baseImage = 'amazoncorretto:11-alpine'
         ports = [8080]
-        images = ["springwolf/springwolf-app:${project.version}"]
+        images = ["stavshamir/springwolf-app:${project.version}"]
         jvmArgs = ['-Dspring.profiles.active=docker']
     }
 
