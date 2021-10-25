@@ -1,7 +1,5 @@
 package io.github.springwolf.springwolfapp;
 
-import java.util.Map;
-
 public interface SpringwolfProducer {
-    void send(String channelName, Map<String, Object> payload);
+    void send(String channelName, Object payload);
 }

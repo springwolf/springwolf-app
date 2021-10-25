@@ -1,5 +1,6 @@
 package io.github.springwolf.springwolfapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -10,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
 public class SpringwolfAmqpProducer implements SpringwolfProducer {
 
     private static final Logger log = LoggerFactory.getLogger(SpringwolfAmqpProducer.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private ConnectionFactory connectionFactory;
 
     @Autowired
@@ -34,7 +35,7 @@ public class SpringwolfAmqpProducer implements SpringwolfProducer {
     }
 
     @Override
-    public void send(String queueName, Map<String, Object> payload) {
+    public void send(String queueName, Object payload) {
         if (connectionFactory == null) {
             log.warn("Can't publish to AMQP - producer failed to initialize");
             throw new SpringwolfProducerException("Could not connect to AMQP");
@@ -45,13 +46,14 @@ public class SpringwolfAmqpProducer implements SpringwolfProducer {
         try (Connection connection = connectionFactory.newConnection()) {
             Channel channel = connection.createChannel();
             channel.queueDeclare(queueName, false, false, false, null);
-            channel.basicPublish("", queueName, null, payload.toString().getBytes());
+
+            byte[] payloadAsJson = objectMapper.writeValueAsBytes(payload);
+            channel.basicPublish("", queueName, null, payloadAsJson);
         } catch (IOException | TimeoutException e) {
             var message = "Could not publish to AMQP";
             log.warn(message, e);
             throw new SpringwolfProducerException(message);
         }
-
     }
 
 }
