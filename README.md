@@ -2,8 +2,23 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Springwolf App
-Springwolf App provides a web UI for AsyncApi documents. 
-It has multi-doc support and allows easy publishing of messages to the documented channels.
+
+## Table Of Contents
+- [About](#about)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Limitations](#limitations)
+- [Future Plans](#future-plans)
+
+## About
+Springwolf App is a language and framework-agnostic service to display multiple async api docs.
+Just like Postman and Swagger/OpenApi allows quick and easy way to publish to REST APIs, Springwolf App makes it easy
+to publish to async apis.
+
+Springwolf App can be deployed as service along your other microservices and serve as a one-stop shop for async api
+documentation and usage.
+
+![](animation.gif)
 
 ## Usage
 1. Create a directory for your async api files - it should contain only async api files.
