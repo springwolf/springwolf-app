@@ -11,14 +11,30 @@
 - [Future Plans](#future-plans)
 
 ## About
-Springwolf App is a language and framework-agnostic service to display multiple async api docs.
-Just like Postman and Swagger/OpenApi allows quick and easy way to publish to REST APIs, Springwolf App makes it easy
-to publish to async apis.
+Springwolf App is a service that allows the user to view multiple async API docs and use the APIs in one place.
 
-Springwolf App can be deployed as service along your other microservices and serve as a one-stop shop for async api
-documentation and usage.
+![](demo.gif)
 
-![](animation.gif)
+### Background
+As users of async APIs we often need to publish a message manually - but doing so is not very convenient. We need to:
+1. Find and view the async API document (if there is one)
+2. Find out all the details about the server (how to connect) and channel (name, payload schema, etc.)
+3. Go to a different tool (many times a complex CLI)
+4. Structure those details to a command (which is often complex as well)
+
+*But why do it manually? It can be done automatically with the details described in the async API document!*
+
+### Solution
+And this is exactly what Springwolf App does when you provide it with your async API documents:
+1. It generates a web UI for all your docs in one place (where you can choose which doc to display).
+2. It has predefined producers for a variety of protocols (currently only kafka and amqp, but more will be added)
+   that can connect to the server with the information supplied in the async API doc.
+3. It allows you to publish messages directly from the UI to the channels described in the async API doc.
+
+**View the API details and use it in the same place.**
+
+The app itself is released as docker image to be included in your orchestration, allowing both easy CI/CD of your docs
+and easy access to the developers and consumers of the APIs.
 
 ## Usage
 1. Create a directory for your async api files - it should contain only async api files.
