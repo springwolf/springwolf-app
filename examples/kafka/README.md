@@ -6,7 +6,7 @@ This example contains Async Api docs describing two microservices:
 A docker compose file is provided, which can be used to conveniently run the following services:
 - Springwolf App
 - Kafka broker and zookeeper
-- Kafdrop, a Kafka UI
+- Kafdrop, a Kafka UI provided to see messages published by Springwolf App
 
 The services described by the Async Api docs are not included.
 
